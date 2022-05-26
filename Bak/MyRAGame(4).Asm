@@ -18,29 +18,6 @@ option casemap:none
 ;ENDIF
 
 include MyRAGame.inc
-;include record1.asm
-;include record.inc
-
-
-printf      PROTO C :dword, :VARARG  ; for test
-
-
-sql_open  typedef proto :dword,:dword
-SQL_Open  typedef ptr   sql_open
-
-sql_close typedef proto :dword
-SQL_Close typedef ptr   sql_close
-
-callback  typedef proto :dword,:dword,:dword,:dword
-CallBack  typedef ptr   callback
-
-sql_exec  typedef proto :dword,:dword,:CallBack,:dword,:dword
-SQL_Exec  typedef ptr   sql_exec
-
-sql_slct  typedef proto :dword,:dword,:dword,:dword,:dword,:dword
-SQL_Slct  typedef ptr   sql_slct
-
-
 
 
 
@@ -908,18 +885,18 @@ OnScoreUpdate proc hWin:HWND
 	;mov @rrt.top, 50
 	
 	;set the text's color 
-    invoke SetTextColor, @hdc, 0F5F5F5h
-    invoke SetBkMode, @hdc, 00A9B3B8h
+    	invoke SetTextColor, @hdc, 0F5F5F5h
+    	invoke SetBkMode, @hdc, 00A9B3B8h
     
-    invoke crt_sprintf, addr text_score, addr sz_Num_to_text, num_score
-    invoke crt_strlen, addr text_score
-    mov text_score_len, eax
+    	invoke crt_sprintf, addr text_score, addr sz_Num_to_text, num_score
+    	invoke crt_strlen, addr text_score
+   	mov text_score_len, eax
     
 	invoke crt_sprintf, addr text_highest_score, addr sz_Num_to_text, num_highest_score
-    invoke crt_strlen, addr text_highest_score
-    mov text_highest_len, eax
+    	invoke crt_strlen, addr text_highest_score
+    	mov text_highest_len, eax
         
-    ret
+    	ret
 OnScoreUpdate endp
 
 ;-------------------------------------------------------------------------------------
@@ -959,9 +936,9 @@ OnKeydown endp
 ;-------------------------------------------------------------------------------------
 WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
-    local @ps:PAINTSTRUCT
-    local @hdc:HDC
-    local @szBuff[100]:TCHAR
+    	local @ps:PAINTSTRUCT
+    	local @hdc:HDC
+    	local @szBuff[100]:TCHAR
 	local @rt:RECT
 	local @crText:COLORREF
 	local @dwLen:dword
@@ -971,6 +948,10 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
     .IF eax == WM_INITDIALOG
         push hWin
         pop hWnd
+        
+        
+        invoke AllowSetForegroundWindow,ASFW_ANY
+    	invoke SetForegroundWindow,hWin
         
         ; Init Stuff Here
         invoke OnBlockReset, @hdc
@@ -990,7 +971,7 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
         ret
 
     .ELSEIF eax == WM_PAINT
-        
+        invoke SetForegroundWindow,hWin
         ;Draw background
         invoke GetClientRect, hWin, addr @rt
         
@@ -1060,14 +1041,18 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
             Invoke SendMessage,hWin,WM_PAINT,0,0
             
         .ELSEIF eax == IDM_SAVE
+        	.if user_name == 0
+        		invoke DialogBoxParam, hInstance, IDD_GET_USER_NAME, hWnd, addr WndUserNameProc, NULL
+        	.else
+        		invoke saveGame, offset BLOCK, offset user_name, offset num_score
+        	.endif
             
-            invoke saveGame, offset BLOCK, offset user_name, offset test_score
+            	
             
         .ELSEIF eax == IDM_RANK
             
-		;Invoke WinRank, hInstance, NULL, NULL, SW_SHOWDEFAULT
 		invoke prepareRankInfo
-             ;invoke  MessageBox,NULL,offset rank_info1,offset dbname,MB_OK
+
 		invoke DialogBoxParam, hInstance, IDD_RANK, hWin, addr WndRankProc, NULL
 		
 		
@@ -1084,6 +1069,7 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
         Invoke PostQuitMessage,NULL
         
     .ELSE
+    	invoke SetForegroundWindow,hWin
         Invoke DefWindowProc,hWin,uMsg,wParam,lParam
         ret
     .ENDIF
@@ -1099,9 +1085,9 @@ WndProc endp
 WndUserNameProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 
-local @ps:PAINTSTRUCT
-    local @hdc:HDC
-    local @szBuff[100]:TCHAR
+	local @ps:PAINTSTRUCT
+    	local @hdc:HDC
+    	local @szBuff[100]:TCHAR
 	local @rt:RECT
 	local @crText:COLORREF
 	local @dwLen:dword
@@ -1263,9 +1249,21 @@ local @ps:PAINTSTRUCT
 		
     .ELSEIF eax == WM_CLOSE
     	invoke GetActiveWindow
-        Invoke EndDialog,eax, 0
+        Invoke EndDialog,eax, wParam
+        
+        invoke GetParent,hWin
+    	
+
+    	invoke SetForegroundWindow,hWnd
+    	.if eax == 0
+    		;invoke  MessageBox,NULL,eax,offset dbname,MB_OK
+    	.endif
         
     .ELSEIF eax == WM_DESTROY
+    	
+    	
+    	;invoek SwitchToThisWindow, eax, ebx
+    	;Invoke ShowWindow, eax, SW_SHOWNORMAL
         ;Invoke PostQuitMessage,NULL
         
     .ELSE

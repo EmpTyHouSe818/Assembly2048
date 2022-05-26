@@ -241,9 +241,9 @@ updateBestByName proc address_name:dword, address_score:dword
 	ret
 
 updateBestByName endp
-;------------------------------------------------------------------------
-;getBestByName: return the best score from Players if there is a record with name = NAME in Players. Otherwise return the error code 1.
-;------------------------------------------------------------------------
+;------------------------------------------------------------------------------------------------------------------------
+;getBestByName: return the best score and error code from Players. if there is a record with name = NAME in Players, error code = 0. Otherwise return the error code 1.
+;------------------------------------------------------------------------------------------------------------------------
 
 getBestByName      proc    address_name:dword
         local    @result,@nRow,@nCol
@@ -382,6 +382,8 @@ saveGame    proc    address_states:dword, address_name:dword, address_score:dwor
             
             invoke   hs_open,offset fileName,offset hDB
             
+            
+            
             invoke  RtlZeroMemory, offset sql, sizeof sql
             invoke strcat, offset sql, offset sql_deleteByName  ; delete first. TODO: more save_file?
 
@@ -450,6 +452,11 @@ loadGame proc address_name:dword
 	local    @result,@nRow,@nCol
               local    @i,@j,@index
               LOCAL	@iBlock:dword
+              
+              
+              ; first set num_best_score
+              invoke getBestByName, address_name
+              mov num_highest_score, eax
               
               invoke  RtlZeroMemory, offset sql, sizeof sql
             invoke strcat, offset sql, offset sql_selectByName

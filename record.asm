@@ -98,6 +98,8 @@ empty         db       0
 pad	db	5 dup(' '),0
 
 
+szSave	db	'Save successfully!', 0
+szSaveTitle	db	'Save', 0
 
 ;for debug
 states  dword   2,16,0,0,16,0,0,0,2,4,8,16,32,1024,2048,0
@@ -382,6 +384,8 @@ saveGame    proc    address_states:dword, address_name:dword, address_score:dwor
             
             invoke   hs_open,offset fileName,offset hDB
             
+            
+            
             invoke  RtlZeroMemory, offset sql, sizeof sql
             invoke strcat, offset sql, offset sql_deleteByName  ; delete first. TODO: more save_file?
 
@@ -437,6 +441,8 @@ writeStates:
 
 
             invoke updateBestByName, address_name, address_score
+            
+            invoke  MessageBox,NULL,offset szSave,offset szSaveTitle,MB_OK
 
             ret
 saveGame    endp

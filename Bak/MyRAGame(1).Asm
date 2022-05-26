@@ -18,16 +18,6 @@ option casemap:none
 ;ENDIF
 
 include MyRAGame.inc
-;include record1.asm
-;include record.inc
-
-
-printf      PROTO C :dword, :VARARG  ; for test
-
-
-
-
-
 
 
 
@@ -959,6 +949,10 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
         push hWin
         pop hWnd
         
+        
+        ;invoke AllowSetForegroundWindow,ASFW_ANY
+    	
+        
         ; Init Stuff Here
         invoke OnBlockReset, @hdc
         
@@ -977,7 +971,7 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
         ret
 
     .ELSEIF eax == WM_PAINT
-        
+
         ;Draw background
         invoke GetClientRect, hWin, addr @rt
         
@@ -1047,8 +1041,13 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
             Invoke SendMessage,hWin,WM_PAINT,0,0
             
         .ELSEIF eax == IDM_SAVE
+        	.if user_name == 0
+        		invoke DialogBoxParam, hInstance, IDD_GET_USER_NAME, hWnd, addr WndUserNameProc, NULL
+        	.else
+        		invoke saveGame, offset BLOCK, offset user_name, offset num_score
+        	.endif
             
-            invoke saveGame, offset BLOCK, offset user_name, offset num_score
+            	
             
         .ELSEIF eax == IDM_RANK
             
@@ -1056,7 +1055,7 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 		invoke DialogBoxParam, hInstance, IDD_RANK, hWin, addr WndRankProc, NULL
 		
-		
+		invoke SetForegroundWindow,hWin
             
         .ENDIF
 
@@ -1070,6 +1069,7 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
         Invoke PostQuitMessage,NULL
         
     .ELSE
+    	
         Invoke DefWindowProc,hWin,uMsg,wParam,lParam
         ret
     .ENDIF
@@ -1249,9 +1249,21 @@ local @ps:PAINTSTRUCT
 		
     .ELSEIF eax == WM_CLOSE
     	invoke GetActiveWindow
-        Invoke EndDialog,eax, 0
+        Invoke EndDialog,eax, wParam
+        
+        invoke GetParent,hWin
+    	
+
+    	invoke SetForegroundWindow,hWnd
+    	.if eax == 0
+    		;invoke  MessageBox,NULL,eax,offset dbname,MB_OK
+    	.endif
         
     .ELSEIF eax == WM_DESTROY
+    	
+    	
+    	;invoek SwitchToThisWindow, eax, ebx
+    	;Invoke ShowWindow, eax, SW_SHOWNORMAL
         ;Invoke PostQuitMessage,NULL
         
     .ELSE

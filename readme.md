@@ -74,13 +74,16 @@
     * 用户名称地址
 * 返回值：
     此函数有两个返回值。eax中为历史最高分，ebx为错误信息。若用户是首次游戏（无历史最高分），则ebx = 1. 否则ebx = 0.
-### 6. dword2str proto :dword, :dword
+
+### 6. prepareRankInfo proc
+* 功能：从数据库中读出排名前5的用户名称和最高分，填入rank_info1-rank_info5
+### 7. dword2str proto :dword, :dword
 * 功能：将dword类型转换为byte（str）类型
 * 参数：
     * dword数据地址
     * byte数据地址
 * 说明：第二个参数为存放str的地址，要求有足够的空间存放转换的字符串
-### 7. str2dword proto :dword, :dword
+### 8. str2dword proto :dword, :dword
 * 功能：将byte（str）类型转换为dword类型
 * 参数：
     * byte数据地址

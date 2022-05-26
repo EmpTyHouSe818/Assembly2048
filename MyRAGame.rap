@@ -82,16 +82,16 @@ Group=Assembly,Resources,Misc
 [AutoLoad]
 AutoLoad=1,4,2,1001,3,6,7
 [Find]
-1="sz_Text_Score"
-2="BLOCK"
-3="block_width"
-4="instead of"
-5="fileName"
-6="hInstance"
-7="OnBlockReset"
-8="WndProc"
-9="num_block"
-10="g_2_or_4"
+1="getmodule"
+2="sz_Text_Score"
+3="BLOCK"
+4="block_width"
+5="instead of"
+6="fileName"
+7="hInstance"
+8="OnBlockReset"
+9="WndProc"
+10="num_block"
 [RADebugBP]
 3=
 1=
@@ -109,12 +109,12 @@ AutoLoad=1,4,2,1001,3,6,7
 [Size]
 3=0,0,1035,495,30
 2=0,0,0,0,4005
-1=0,0,0,0,363
+1=0,0,0,0,25025
 4=0,0,0,0
 7=0,0,0,0
 8=
 6=0,0,1035,495
-1001=0,0,0,0,14290
+1001=0,0,0,0,11738
 9=
 [Colref]
 0=00FFFFFF
